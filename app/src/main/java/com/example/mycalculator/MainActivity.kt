@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mycalculator.databinding.ActivityMainBinding
-import java.util.Stack
 import java.util.Locale
+import java.util.Stack
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var  binding: ActivityMainBinding
+
+
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,9 +74,12 @@ class MainActivity : AppCompatActivity() {
         binding.btnDot.setOnClickListener {
             val currText = binding.expression.text.toString().replace(" ", "")
             if (currText.isNotEmpty()) {
-                val lastChar = currText.last()
-                if (lastChar !in operationSymbols) {
-                    binding.expression.append(".")
+                val lastToken = binding.expression.text.split(" ").last()
+                if ("." !in lastToken){
+                    val lastChar = currText.last()
+                    if (lastChar !in operationSymbols) {
+                        binding.expression.append(".")
+                    }
                 }
             }
         }
@@ -88,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     val expressionInPostfix = convertToPostfix(expressionInInfix)
                     val computationResult = calculateByPostfix(expressionInPostfix)
-                    binding.result.text = "=${computationResult}"
+                    binding.result.text = "= $computationResult"
                 } catch (e: ArithmeticException) {
                     binding.result.text = "${e.message}"
                 } catch (e: Exception) {
@@ -98,18 +103,28 @@ class MainActivity : AppCompatActivity() {
         }
 
         // number buttons
-        binding.btn0.setOnClickListener { binding.expression.append("0") }
-        binding.btn1.setOnClickListener { binding.expression.append("1") }
-        binding.btn2.setOnClickListener { binding.expression.append("2") }
-        binding.btn3.setOnClickListener { binding.expression.append("3") }
-        binding.btn4.setOnClickListener { binding.expression.append("4") }
-        binding.btn5.setOnClickListener { binding.expression.append("5") }
-        binding.btn6.setOnClickListener { binding.expression.append("6") }
-        binding.btn7.setOnClickListener { binding.expression.append("7") }
-        binding.btn8.setOnClickListener { binding.expression.append("8") }
-        binding.btn9.setOnClickListener { binding.expression.append("9") }
+        binding.btn0.setOnClickListener {  appendDecimal(binding, "0") }
+        binding.btn1.setOnClickListener {  appendDecimal(binding,"1") }
+        binding.btn2.setOnClickListener {  appendDecimal(binding,"2") }
+        binding.btn3.setOnClickListener {  appendDecimal(binding,"3") }
+        binding.btn4.setOnClickListener {  appendDecimal(binding,"4") }
+        binding.btn5.setOnClickListener {  appendDecimal(binding,"5") }
+        binding.btn6.setOnClickListener {  appendDecimal(binding,"6") }
+        binding.btn7.setOnClickListener {  appendDecimal(binding,"7") }
+        binding.btn8.setOnClickListener {  appendDecimal(binding,"8") }
+        binding.btn9.setOnClickListener {  appendDecimal(binding,"9") }
+
 
     }
+
+    private fun appendDecimal(binding: ActivityMainBinding, decimalString: String) {
+        val lastToken = binding.expression.text.split(" ").last()
+        if (lastToken.length == 1 && lastToken == "0"){
+            return
+        }
+        binding.expression.append(decimalString)
+    }
+
 
     private val operators = mapOf(
         "×" to 2,
