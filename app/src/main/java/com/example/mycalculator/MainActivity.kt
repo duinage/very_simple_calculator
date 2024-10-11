@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mycalculator.databinding.ActivityMainBinding
 import java.util.Stack
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,7 +22,10 @@ class MainActivity : AppCompatActivity() {
         // operation buttons
         val operationSymbols = setOf('+', '-', '×', '÷', '.')
 
-        binding.btnC.setOnClickListener { binding.expression.text = "" }
+        binding.btnC.setOnClickListener {
+            binding.expression.text = ""
+            binding.result.text = ""
+        }
 
         binding.btnAdd.setOnClickListener {
             val currText = binding.expression.text.toString().replace(" ", "")
@@ -82,22 +86,17 @@ class MainActivity : AppCompatActivity() {
                 try {
                     val expressionInPostfix = convertToPostfix(expressionInInfix)
                     val computationResult = calculateByPostfix(expressionInPostfix)
-                    binding.expression.text = computationResult.toString()
+                    binding.result.text = "=${computationResult}"
                 } catch (e: ArithmeticException) {
-                    binding.expression.text = "${e.message}"
+                    binding.result.text = "${e.message}"
                 } catch (e: Exception) {
-                    binding.expression.text = "Error: Invalid expression"
+                    binding.result.text = "Invalid expression"
                 }
             }
         }
 
         // number buttons
-        binding.btn0.setOnClickListener {
-            val currText = binding.expression.text.toString().replace(" ", "")
-            if (currText.isNotEmpty()) {
-                binding.expression.append("0")
-            }
-        }
+        binding.btn0.setOnClickListener { binding.expression.append("0") }
         binding.btn1.setOnClickListener { binding.expression.append("1") }
         binding.btn2.setOnClickListener { binding.expression.append("2") }
         binding.btn3.setOnClickListener { binding.expression.append("3") }
@@ -145,10 +144,7 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
-    private fun operation(leftOperand: String, operator: String, rightOperand: String): Double {
-        val left = leftOperand.toDouble()
-        val right = rightOperand.toDouble()
-
+    private fun operation(left: Double, operator: String, right: Double): Double {
         return when (operator) {
             "+" -> left + right
             "-" -> left - right
@@ -165,20 +161,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun calculateByPostfix(tokens: List<String>): Double {
-        val stack = Stack<String>()
+        val stack = Stack<Double>()
 
         for (token in tokens) {
             if (token in operators) {
                 val rightOperand = stack.pop()
                 val leftOperand = stack.pop()
                 val result = operation(leftOperand, token, rightOperand)
-                stack.push(result.toString())
+                stack.push(result)
             } else {
-                stack.push(token)
+                stack.push(token.toDouble())
             }
         }
-
-        return stack.pop().toDouble()
+        val finalResult = stack.pop()
+        return String.format(Locale.US, "%.8f", finalResult).toDouble()
     }
 
 }
