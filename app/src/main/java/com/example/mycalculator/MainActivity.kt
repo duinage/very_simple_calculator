@@ -81,8 +81,10 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.btnEqual.setOnClickListener {
-            val expressionInInfix = binding.expression.text.toString()
-            if (expressionInInfix.isNotEmpty()) {
+            val currText = binding.expression.text.toString().replace(" ", "")
+            val lastChar = currText.last()
+            if (currText.isNotEmpty() && lastChar !in operationSymbols) {
+                val expressionInInfix = binding.expression.text.toString()
                 try {
                     val expressionInPostfix = convertToPostfix(expressionInInfix)
                     val computationResult = calculateByPostfix(expressionInPostfix)
