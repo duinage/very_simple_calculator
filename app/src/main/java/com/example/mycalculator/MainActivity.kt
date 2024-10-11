@@ -98,7 +98,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         // number buttons
-        binding.btn0.setOnClickListener { binding.expression.append("0") }
+        binding.btn0.setOnClickListener {
+            val currText = binding.expression.text.toString().replace(" ", "")
+            val lastChar = currText.last()
+            if (lastChar != '0'){
+                binding.expression.append("0")
+            }
+        }
         binding.btn1.setOnClickListener { binding.expression.append("1") }
         binding.btn2.setOnClickListener { binding.expression.append("2") }
         binding.btn3.setOnClickListener { binding.expression.append("3") }
